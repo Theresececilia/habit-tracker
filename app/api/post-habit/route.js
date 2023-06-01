@@ -1,30 +1,41 @@
 import supabase from "@/lib/supabaseClient";
-import { NextResponse } from "next/server";
 
-export const POST = async (req, NextResponse) => {
-    console.log(req.body);
-    const newHabit = Object.keys(req.body).length === 0 ? undefined : req.body;
+export const POST = async (req) => {
+    const habit = await req.json()
+ 
+    const { data, error, status } = await supabase
+        .from('habits')
+        .insert(habit)
+        .select()
+        .single()
+        // add single to return as object instead of array
+ 
+    if (error) return Response.status(status).json({ error })
+ 
+    return Response.json(habit)
+}
 
-    if (!newHabit) {
-        return NextResponse
-            .status(400)
-            .json({ message: "Please provide data." });
-    }
+// export const POST = async (req, Response) => {
 
-    try {
-        const { data, error } = await supabase
-            .from('habits')
-            .insert([newHabit])
-            .single();
+//     // const body = req.json()
+//     // // const newHabit = Object.keys(body).length === 0 ? undefined : body;
 
-        console.log(error, data);
+//     // // if (!newHabit) {
+//     // //     return Response
+//     // //         .status(400)
+//     // //         .json({ message: "Please provide data." });
+//     // // }
 
-        if (error) {
-            return NextResponse.status(500).json({ message: "Failed to add new data." });
-        }
+//     //     const { data, error, status } = await supabase
+//     //         .from('habits')
+//     //         .insert(body)
+//     //         .single();
 
-        return NextResponse.json(data);
-    } catch (error) {
-        return NextResponse.status(500).json({ message: "Failed to add new data.", error });
-    }
-};
+//     //     console.log(body, error, body);
+
+//     //     if (error) {
+//     //         return Response.status(status).json({ message: "Failed to add new data." });
+//     //     }
+
+//     //     return Response.json(body)
+// };

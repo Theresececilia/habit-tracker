@@ -1,17 +1,24 @@
-import HabitFeed from "@/components/HabitFeed";
+import { getHabits } from "@/lib/supabaseClient";
 import PercentageBar from "@/components/PercentageBar";
+import HabitFeed from "@/components/HabitFeed";
+import AddButton from "@/components/addButton";
+export const revalidate = 0
 
-const Home = () => {
+const Home = async () => {
+
+  let habits;
+  
+  try {
+    habits = await getHabits()
+  } catch (error) {
+   console.log(error)
+  }
 
   return (
     <main className="flex min-h-screen flex-col px-8 bg-darkColor">
-      <h2 className="text-white text-3xl font-black w-full pt-8 ">
-        Welcome back, Ella {/* name of user */}
-      </h2>
-      <p className="text-lightGrey font-s pb-4">Every Habit Count: What positive rhythms did you set today?</p>
       <PercentageBar />
-      
-      <HabitFeed />
+      <HabitFeed habits={habits} />
+      <AddButton />
     </main>
   );
 }
